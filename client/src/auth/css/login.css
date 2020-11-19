@@ -1,0 +1,51 @@
+#login-form {
+    width : 50%;
+    float : right;
+    margin-top : 150px;
+    margin-right : 50px;
+    background-color : #4c527090;
+    padding : 12px;
+    box-shadow : 10px 25px #22222280;
+    backdrop-filter : grayscale(0.5) opacity(0.8)
+}
+
+#login-form input::placeholder {
+    color : purple;
+    opacity: 0.5;
+}
+
+#login-form input {
+    background : transparent;
+    border : none;
+    border-bottom : 1px solid black;
+    border-radius : 0px;
+    color : purple;
+}
+
+#login-form label {
+    font-weight : bolder;
+    font-family: 'Courier New', Courier, monospace;
+    margin-top : 12px;
+}
+
+#login-form input:focus {
+    border-bottom : purple;
+}
+
+#btn-panel {
+    width : 100%;
+    margin-top : 12px
+}
+
+#btn-panel tr {
+    width : 100%;
+    padding : 8px;
+}
+
+#btn-panel td {
+    width : 50%;
+}
+
+.form-btn {
+    width : 100%
+}
