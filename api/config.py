@@ -6,6 +6,6 @@ db_config = {
 }
 
 system_mail_config = {
-    'email_address' : 'vip_beta@gmail.com',
+    'email_address' : 'ivan.beta1.vip@gmail.com',
     'password' : 'Qazwsx007;!@#',
 }
