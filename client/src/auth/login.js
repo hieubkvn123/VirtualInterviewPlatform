@@ -53,7 +53,9 @@ class LoginForm extends Component {
 			}
 		}).then(response => response.data)
 		.then(response => {
-			console.log(response)
+			if(response == 'success') {
+				alert('You have registered successfully, the password has been sent to your email')
+			}
 		})
 	}
 
