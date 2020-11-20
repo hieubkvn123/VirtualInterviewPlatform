@@ -3,6 +3,7 @@ import './App.css'
 import SignUpForm from './auth/signup'
 import LoginForm from './auth/login'
 import HorizontalBar from './auth/horizontal_bar'
+import WebcamStreamCapture from './vip/virtual_interview'
 
 import {
   BrowserRouter as Router ,
@@ -28,6 +29,9 @@ function App() {
             </Route>
             <Route path='/login'>
               <LoginForm/>
+            </Route>
+            <Route path='/vip'>
+              <WebcamStreamCapture/>
             </Route>
             <Route exact path='/' render={()=>{
 								{/* Redirect to /home when endpoint is empty */}
