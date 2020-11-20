@@ -3,14 +3,14 @@ import axios from 'axios'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/signup.css'
 
-class LoginForm extends Component {
+class SignUpForm extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {}
 
 		// bind with hooks
 		this.onChange = this.onChange.bind(this)
-		this.onLogin = this.onLogin.bind(this)
+		this.onSignUp = this.onSignUp.bind(this)
 	}
 
 	componentWillMount() {
@@ -37,13 +37,14 @@ class LoginForm extends Component {
 		this.setState({[e.target.name] : e.target.value})
 	}
 
-	onLogin = function(e) {
+	onSignUp = function(e) {
 		var formData = new FormData()
+		formData.append('name', this.state['name'])
 		formData.append('email', this.state['email'])
-		formData.append('password', this.state['password'])
+		formData.append('affiliation', this.state['company-name'])
 
 		axios({
-			url : 'http://localhost:8080/auth/login',
+			url : 'http://localhost:8080/auth/signup',
 			method : 'POST',
 			data : formData,
 			headers : {
@@ -52,9 +53,9 @@ class LoginForm extends Component {
 		}).then(response => response.data)
 		.then(response => {
 			if(response == 'success') {
-				alert('Logged in successfully')
-			}else if(response == 'fail'){
-				alert('Email or password is incorrect')
+				alert('You have registered successfully, the password has been sent to your email')
+			}else if(response == 'exist'){
+				alert('The user email has already existed')
 			}
 		})
 	}
@@ -62,19 +63,22 @@ class LoginForm extends Component {
 	render() {
 		return (
 			<div className='auth-form' id='login-form'>
-				<h1 style={{'font-weight':'bolder'}}>Login</h1>
+				<h1 style={{'font-weight':'bolder'}}>Sign Up</h1>
 				<hr/>
 				<form method='POST' action='http://localhost:8080/auth/login'>
+					<label for='name'>Name</label>
+					<input placeholder='Full Name' id='name' name='name' type='text' class='form-control' onChange={this.onChange}/>
+
 					<label for='email'>Email</label>
 					<input placeholder='Personal email' id='email' name='email' type='text' class='form-control' onChange={this.onChange}/>
 
-					<label for='password'>Password</label>
-					<input placeholder='Password' id='password' name='password' type='password' class='form-control' onChange={this.onChange}/>
+					<label for='company-name'>Company Name</label>
+					<input placeholder='Organization Name' id='company-name' name='company-name' type='text' class='form-control' onChange={this.onChange}/>
 					
 					<table id='btn-panel'>
 						<tr>
-							<td><a href='/signup'><button type='button' id='signup-button' class='form-btn btn btn-primary'>Sign Up</button></a></td>
-							<td><button type='button' id='login-button' class='form-btn btn btn-primary' onClick={this.onLogin}>Log in</button></td>
+							<td><button type='button' id='signup-button' class='form-btn btn btn-primary' onClick={this.onSignUp}>Sign Up</button></td>
+							<td><a href='/login'><button type='button' id='login-button' class='form-btn btn btn-primary'>Log in</button></a></td>
 						</tr>
 					</table>
 				</form>
@@ -83,4 +87,4 @@ class LoginForm extends Component {
 	}
 }
 
-export default LoginForm;
+export default SignUpForm;

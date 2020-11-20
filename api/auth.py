@@ -6,6 +6,7 @@ from config import db_config
 from config import system_mail_config
 
 import random
+import hashlib
 import requests
 import string
 import mysql.connector
@@ -14,6 +15,8 @@ from flask_mail import Message, Mail
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 CORS(auth)
+
+ENCRIPTION = False
 
 ### Setting up database connection ###
 def create_connection():
@@ -44,7 +47,21 @@ def send_mail(config, message):
 
 	return r
 	
-@auth.route('signup', methods=['POST', 'GET'])
+
+def checkUserExists(email):
+	connection = create_connection()
+	sql = "SELECT * FROM USERS WHERE userMail='%s'" % email
+	cursor = connection.cursor()
+
+	cursor.execute(sql)
+	results = cursor.fetchall()
+	connection.close() 
+	if(cursor.rowcount > 1):
+		return True	
+	else:
+		return False
+
+@auth.route('/signup', methods=['POST', 'GET'])
 def signup():
 	if(request.method == 'POST'):
 		name = request.form['name']
@@ -52,13 +69,20 @@ def signup():
 		affl  = request.form['affiliation']
 		password = get_random_password(10)
 
+		if(ENCRIPTION):
+			password = hashlib.md5(password.encode()).hexdigest()
+
 		connection = create_connection()
 		cursor = connection.cursor()
+
+		if(checkUserExists(email)):
+			return 'exist'
 
 		sql = 'INSERT INTO USERS VALUES (DEFAULT, %s, %s, %s, %s)'
 		val = (name, email, affl, password)
 		cursor.execute(sql, val)
 		connection.commit()
+		connection.close()
 
 		system_mail_config['recipient'] = email 
 		message = 'Your password is %s' % password
@@ -69,3 +93,25 @@ def signup():
 			return 'success'
 		else:
 			return 'failed'
+
+@auth.route('/login', methods=['POST'])
+def login():
+	if(request.method == 'POST'):
+		email = request.form['email']
+		password = request.form['password']
+
+		if(ENCRIPTION):
+			password = hashlib.md5(password.encode()).hexdigest()
+
+		connection = create_connection()
+		cursor = connection.cursor()
+
+		sql = "SELECT * FROM USERS WHERE userMail='%s' AND password='%s'"
+		cursor.execute(sql % (email, password))
+		results = cursor.fetchall()
+
+		if(cursor.rowcount > 0): # user exists
+			return 'success'
+		else:
+			return 'fail'
+		
