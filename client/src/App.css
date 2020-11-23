@@ -2,7 +2,7 @@
   text-align: center;
 }*/
 .bg {
-  background-image : url('http://192.168.30.145:8080/static/background.png');
+  background-image : url('http://192.168.30.105:8080/static/background.png');
   width : 100vw;
   height : 100vh;
   position: absolute;
