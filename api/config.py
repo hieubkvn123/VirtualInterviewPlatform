@@ -6,6 +6,7 @@ db_config = {
 }
 
 system_mail_config = {
+    'server' : '192.168.30.105',
     'email_address' : 'ivan.beta1.vip@gmail.com',
     'password' : 'Qazwsx007;!@#',
 }

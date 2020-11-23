@@ -4,6 +4,7 @@ from flask import current_app
 from flask_cors import CORS 
 from config import db_config
 from config import system_mail_config
+from config import ssl_config
 
 import random
 import hashlib
@@ -43,7 +44,7 @@ def send_mail(config, message):
 		'recipient' : config['recipient']
 	}
 
-	r = requests.post('http://localhost:8080/send_mail', data)
+	r = requests.post('http://%s:8081/send_mail' % system_mail_config['server'], data, verify=ssl_config['cert'])
 
 	return r
 	
@@ -60,6 +61,19 @@ def checkUserExists(email):
 		return True	
 	else:
 		return False
+
+def checkUserAdmin(email):
+	connection = create_connection()
+	sql = "SELECT * FROM USERS WHERE userMail='%s' AND isAdmin=1"
+	cursor = connection.cursor()
+
+	cursor.execute(sql)
+	results = cursor.fetchall()
+	connection.close()
+	if(cursor.rowcount > 0):
+		return True 
+	else:
+		return False 
 
 @auth.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -79,7 +93,7 @@ def signup():
 			print(checkUserExists(email))
 			return 'exist'
 
-		sql = 'INSERT INTO USERS VALUES (DEFAULT, %s, %s, %s, %s)'
+		sql = 'INSERT INTO USERS VALUES (DEFAULT, %s, %s, %s, %s, 0)'
 		val = (name, email, affl, password)
 		cursor.execute(sql, val)
 		connection.commit()
@@ -112,7 +126,10 @@ def login():
 		results = cursor.fetchall()
 
 		if(cursor.rowcount > 0): # user exists
-			return 'success'
+			if(not checkUserAdmin(email)):
+				return 'success'
+			else:
+				return 'admin'
 		else:
 			return 'fail'
 		

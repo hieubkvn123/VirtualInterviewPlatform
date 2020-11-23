@@ -1,5 +1,3 @@
-import threading
-
 from flask import Flask
 from flask import request
 from flask_cors import CORS
@@ -7,8 +5,6 @@ from flask_cors import CORS
 from flask_mail import Mail, Message
 
 ### Import all blueprints ###
-from mail_server import app as mail_app
-from auth import auth 
 from config import system_mail_config as mail_conf
 from config import ssl_config
 
@@ -22,12 +18,7 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail.init_app(app)
 
-app.register_blueprint(auth, url_prefix='/auth')
 CORS(app)
-
-@app.route('/', methods=['GET', 'POST'])
-def home():
-    return 'Hello world'
 
 @app.route('/send_mail', methods=['POST'])
 def send_mail():
@@ -45,12 +36,7 @@ def send_mail():
         mail.send(msg)
 
         return 'success'
-
-def runMailServer():
-    mail_app.run(host='0.0.0.0', port=8081)  
-
+"""
 if __name__ == '__main__':
-    mail_thread = threading.Thread(target=runMailServer, args=())
-    mail_thread.daemon = True 
-    mail_thread.start()
-    app.run(host='0.0.0.0', port=8080, ssl_context=(ssl_config['cert'], ssl_config['key']))
+    app.run(host='0.0.0.0', port=8081)
+"""
