@@ -45,7 +45,7 @@ class LoginForm extends Component {
 		formData.append('password', this.state['password'])
 
 		axios({
-			url : `http://${this.state.host}:8080/auth/login`,
+			url : `https://${this.state.host}:8080/auth/login`,
 			method : 'POST',
 			data : formData,
 			headers : {
@@ -55,7 +55,7 @@ class LoginForm extends Component {
 		.then(response => {
 			if(response == 'success') {
 				alert('Logged in successfully')
-				window.location.replace('https://192.168.30.105:3000/vip')
+				window.location.replace('/vip')
 			}else if(response == 'fail'){
 				alert('Email or password is incorrect')
 			}

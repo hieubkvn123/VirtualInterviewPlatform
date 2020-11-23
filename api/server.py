@@ -7,6 +7,7 @@ from flask_mail import Mail, Message
 ### Import all blueprints ###
 from auth import auth 
 from config import system_mail_config as mail_conf
+from config import ssl_config
 
 mail = Mail()
 app = Flask(__name__)
@@ -43,4 +44,4 @@ def send_mail():
         return 'success'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, ssl_context=(ssl_config['cert'], ssl_config['key']))

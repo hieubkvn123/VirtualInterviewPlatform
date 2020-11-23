@@ -45,7 +45,7 @@ class SignUpForm extends Component {
 		formData.append('affiliation', this.state['company-name'])
 
 		axios({
-			url : `http://${this.state.host}:8080/auth/signup`,
+			url : `https://${this.state.host}:8080/auth/signup`,
 			method : 'POST',
 			data : formData,
 			headers : {

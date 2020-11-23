@@ -42,7 +42,6 @@ class WebcamStreamCapture extends Component {
     )
   }
 }
-
 export default   WebcamStreamCapture;
   // https://www.npmjs.com/package/react-webcam
   
