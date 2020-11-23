@@ -36,7 +36,7 @@ class WebcamStreamCapture extends Component {
   render() {
     return (
       <div id='camera-container'>
-        <video id='user-camera' height={720} width={1280} autoPlay={true} src={this.videoSrc}></video>
+        <video id='user-camera' autoPlay={true} src={this.videoSrc}></video>
         <p id='info'></p>
       </div>
     )

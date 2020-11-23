@@ -12,3 +12,12 @@ CREATE TABLE USERS (
 	PRIMARY KEY (userID)
 );
 
+CREATE TABLE QUESTIONS (
+	questionID INT(10) NOT NULL,
+	questionGroup VARCHAR(10) NOT NULL,
+	questionContent VARCHAR(1000) NOT NULL,
+	duration INT(10) NOT NULL, /* Duration of question in minutes */
+
+	PRIMARY KEY (questionID, questionGroup)
+);
+
