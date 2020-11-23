@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import config from './config'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/signup.css'
 
 class SignUpForm extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {}
+		this.state = {'host': config['host']}
 
 		// bind with hooks
 		this.onChange = this.onChange.bind(this)
@@ -44,7 +45,7 @@ class SignUpForm extends Component {
 		formData.append('affiliation', this.state['company-name'])
 
 		axios({
-			url : 'http://localhost:8080/auth/signup',
+			url : `http://${this.state.host}:8080/auth/signup`,
 			method : 'POST',
 			data : formData,
 			headers : {

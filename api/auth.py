@@ -56,7 +56,7 @@ def checkUserExists(email):
 	cursor.execute(sql)
 	results = cursor.fetchall()
 	connection.close() 
-	if(cursor.rowcount > 1):
+	if(cursor.rowcount > 0):
 		return True	
 	else:
 		return False
@@ -76,6 +76,7 @@ def signup():
 		cursor = connection.cursor()
 
 		if(checkUserExists(email)):
+			print(checkUserExists(email))
 			return 'exist'
 
 		sql = 'INSERT INTO USERS VALUES (DEFAULT, %s, %s, %s, %s)'

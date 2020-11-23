@@ -1,11 +1,13 @@
 #camera-container {
     margin : auto;
+    height : 90vh;
+    width : 80%;
+    overflow: scroll;
 }
 
-video {
-    width : 8 0vw;
-    height : 80vh;
-    margin : auto;
+#user-camera {
+    overflow: scroll;
     margin-top : 50px;
-    display: block;
+    padding : 0;
 }
+

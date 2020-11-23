@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import config from './config'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/signup.css'
 
 class LoginForm extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {}
+		this.state = {'host':config['host']}
 
 		// bind with hooks
 		this.onChange = this.onChange.bind(this)
@@ -34,6 +35,7 @@ class LoginForm extends Component {
 	}
 
 	onChange = function(e) {
+		console.log(this.state.host)
 		this.setState({[e.target.name] : e.target.value})
 	}
 
@@ -43,7 +45,7 @@ class LoginForm extends Component {
 		formData.append('password', this.state['password'])
 
 		axios({
-			url : 'http://localhost:8080/auth/login',
+			url : `http://${this.state.host}:8080/auth/login`,
 			method : 'POST',
 			data : formData,
 			headers : {
