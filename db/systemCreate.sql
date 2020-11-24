@@ -16,10 +16,6 @@ CREATE TABLE USERS (
 	PRIMARY KEY (userID)
 );
 
-/* Insert one admin to the system */
-INSERT INTO USERS VALUES (DEFAULT, 'Ivan Soh', 'ivan.soh.beta', 'RMAGroup', 'ivan.soh@rma', 1);
-INSERT INTO USERS VALUES (DEFAULT, 'Nong Hieu', 'hieu.nong.beta', 'RMAGroup', 'hieu.nong@rma', 1);
-
 CREATE TABLE QUESTIONS (
 	questionID INT(10) NOT NULL,
 	questionGroup VARCHAR(30) NOT NULL,
@@ -28,4 +24,11 @@ CREATE TABLE QUESTIONS (
 	forRole VARCHAR(20), /* Applied for technical questions */
 
 	PRIMARY KEY (questionID, questionGroup)
-)
+);
+
+CREATE TABLE ROLES (
+	roleId INT(10) NOT NULL,
+	roleName VARCHAR(100) NOT NULL,
+
+	PRIMARY KEY (roleId)
+);

@@ -45,6 +45,8 @@ for i, line in enumerate(lines):
         row = (question_id, question_type, question_content, duration, for_role)
         values.append(row)
 
+        print('INSERT INTO QUESTIONS VALUES (%d, "%s", "%s", %d, "%s");' % (question_id, question_type, question_content, duration, for_role))
+
 sql = 'INSERT INTO QUESTIONS VALUES (%s, %s, %s, %s, %s)'
 cursor.executemany(sql, values)
 connection.commit()

@@ -18,3 +18,8 @@
     display: block;
     max-width : 75%;
 }
+
+.role-select-dialog {
+    display : block;
+    max-width: 60%;
+}
