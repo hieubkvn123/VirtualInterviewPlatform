@@ -14,7 +14,7 @@ CORS(vip)
 ### Some config variables ###
 QUESTION_RATIO = {
     'General' : 2,
-    'Situational' : 3,
+    'Behavioural' : 3,
     'Technical' : 2
 }
 
@@ -65,10 +65,17 @@ def get_random_questions(question_group, num_questions=2):
 @vip.route('/get_questions', methods=['POST']) 
 def get_questions():
     general_questions = get_random_questions('General', num_questions=QUESTION_RATIO['General']) 
-    situational_questions = get_random_questions('Situational', num_questions=QUESTION_RATIO['Situational']) 
+    situational_questions = get_random_questions('Behavioural', num_questions=QUESTION_RATIO['Behavioural']) 
 
     questions = general_questions + situational_questions
     random.shuffle(questions)
-    questions = json.dump(questions)
+
+    questions = json.dumps(questions)
 
     return questions
+
+@vip.route('/upload', methods=['POST'])
+def upload():
+    print(request.files['file'])
+
+    return 'success'

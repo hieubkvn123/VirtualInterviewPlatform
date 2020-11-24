@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import {Modal, Button} from 'react-bootstrap'
+import {ModalDialog, QuestionDialog} from './dialog'
 import terms_and_conditions from './term'
+import RecordRTCPromisesHandler from 'recordrtc'
 import config from './config'
 
 /* Import bootstrap */
@@ -10,133 +13,28 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/vip.css'
 import axios from 'axios';
 
-class ModalDialog extends Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      'host' : config['host'],
-      'show': true,
-      'role_select_show':false, 
-      'selected_role' : '1'
-    }
-
-    this.onSelectChange = this.onSelectChange.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-    this.handleSelectClose = this.handleSelectClose.bind(this)
-    this.componentDidMount = this.componentDidMount.bind(this)
-  }
-
-  componentWillUnmount() {
-
-  }
-
-  componentDidMount = async function() {
-    if(localStorage.getItem('user.name') == undefined){
-      alert('Please login first before accessing this site')
-      window.location.replace('/signup')
-    }
-
-    // get the questions list from server
-    await axios({
-      url : `https://${this.state.host}:8080/vip/get_questions`,
-      method : 'POST',
-      headers : {
-        'Content-Type' : 'multipart/form-data'
-      }
-    }).then(response => response.data)
-    .then(response => {
-      this.setState({'questions':response})
-    })
-
-    console.log(this.state.questions)
-  }
-
-  setShow(show) {
-    this.setState({'show': show})
-  }
-  
-  handleSelectClose(){
-    this.setState({'role_select_show':false})
-    this.props.onSetRole()
-  }
-
-  handleClose() {
-    this.setState({'role_select_show':true})
-    this.setShow(false);
-  }
-
-  onSelectChange = async function(event) {
-    var index = event.nativeEvent.target.selectedIndex;
-    var roleText = event.nativeEvent.target[index].text
-
-    await this.setState({'selected_role' : event.target.value})
-    await this.setState({'selected_role_text' : roleText})
-
-    localStorage.setItem('selected_role_id', this.state.selected_role)
-    localStorage.setItem('selected_role_text', this.state.selected_role_text)
-    this.forceUpdate()
-  }
-
-  render(){
-    return (
-      <>
-        <Modal show={this.state.show} onHide={this.handleClose} dialogClassName='terms-and-conditions-dialog'>
-          <Modal.Header closeButton>
-            <Modal.Title><h1>Terms and Conditions</h1></Modal.Title>
-          </Modal.Header>
-            <Modal.Body style={{'max-height': 'calc(100vh - 300px)', 'overflow-y': 'auto'}}>{terms_and_conditions}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-        ""
-        <Modal show={this.state.role_select_show} onHide={this.handleSelectClose} dialogClassName='role-select-dialog'>
-          <Modal.Header closeButton>
-            <Modal.Title><h1>Please select your role</h1></Modal.Title>
-          </Modal.Header>
-            <Modal.Body style={{'max-height': 'calc(100vh - 300px)', 'overflow-y': 'auto'}}>
-              <select onChange={this.onSelectChange} id='role-select' className='form-control'>
-                <option selected value='1'>Human Resource</option>
-                <option value='2'>Sales and Marketing</option>
-                <option value='3'>Operation and Manufacturing</option>
-                <option value='4'>Information Technology</option>
-                <option value='5'>Finace and Accounting</option>
-                <option value='6'>Research and Development/Engineering</option>
-                <option value='7'>Supply chain management and Logistics</option>
-              </select>
-            </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={this.handleSelectClose}>
-              Select
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-}
-
 class WebcamStreamCapture extends Component {
   constructor(props){
     super(props)
 
-    this.state = {}
+    this.state = {'host':config['host'], 'timer':'00:00', 'streamRecorder':null,'webcamStream':null}
     this.componentDidMount = this.componentDidMount.bind(this)
     this.onSetRole = this.onSetRole.bind(this)
+    this.startInterview = this.startInterview.bind(this)
   }
 
   componentWillUnmount() {
     
   }
 
-  componentDidMount(){
+  componentDidMount = async function(){
     var constraints = { audio: false, video: { width: 1280, height: 720 } };
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then(function(mediaStream) {
         var video = document.querySelector("#user-camera");
+        this.setState({'webcamStream' : mediaStream})
+        this.setState({'streamRecorder' : new RecordRTCPromisesHandler(mediaStream, {type:'video'})})
 
         video.srcObject = mediaStream;
         video.onloadedmetadata = function(e) {
@@ -146,20 +44,79 @@ class WebcamStreamCapture extends Component {
       .catch(function(err) {
         console.log(err.name + ": " + err.message);
       }); // always check for errors at the end.
+
+      // get the questions list from server
+      await axios({
+        url : `https://${this.state.host}:8080/vip/get_questions`,
+        method : 'POST',
+        headers : {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }).then(response => response.data)
+      .then(response => {
+        this.setState({'questions':response})
+      })
+
+      console.log(this.state.questions)
   }
 
-  startInterview () {
+  padDigits = function(number, digits) {
+    return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
+  }
 
+  startInterview = function (index) {
+    ReactDOM.render(<QuestionDialog text={this.state.questions[index].question} question_no={index+1}/>, document.getElementById('question-dialog-region'))
+    
+    var times_in_seconds = 10
+    var timeInterval = setInterval(()=>{
+      if(times_in_seconds <= 0){
+        clearInterval(timeInterval)
+        this.startRecording()
+      }
+      var seconds = this.padDigits(times_in_seconds % 60,2)
+      var minutes = this.padDigits((times_in_seconds - seconds) / 60,2)
+      this.setState({'timer':`${minutes}:${seconds}`})
+      times_in_seconds -= 1
+    }, 1000)
+  }
+
+  // triggered when the preparation time is over
+  // start the recordrtc recorder
+  startRecording = async function() {
+    this.state.streamRecorder.startRecording()
+    const sleep = m => new Promise(r => setTimeout(r, m))
+    await sleep(3000)
+ 
+    await this.state.streamRecorder.stopRecording()
+    let blob = await this.state.streamRecorder.recorder.getBlob()
+    
+    // Now that we got the video blob, upload it to server
+    var formData = new FormData()
+    formData.append('video', blob)
+
+    axios({
+      url : `https://${this.state.host}:8080/vip/upload`,
+      method : 'POST',
+      data : formData,
+      headers : {
+        'Content-Type' : 'multipart/form-data'
+      }
+    }).then(response => response.data)
+    .then(response => {
+      alert(response)
+    })
   }
 
   onSetRole(){
     this.setState({'selected_role_text' : localStorage.getItem('selected_role_text')})
+    this.startInterview(0)
   }
 
   render() {
     return (
       <div id='camera-container'>
         <ModalDialog onSetRole={this.onSetRole}/>
+        <div id='question-dialog-region'></div>
         <video id='user-camera' autoPlay={true} src={this.videoSrc}></video>
         <p id='info'></p>
         <div id='information-region' style={{
@@ -176,7 +133,7 @@ class WebcamStreamCapture extends Component {
             </tr>
           </table>
           <div id='timer'>
-            <h1>00:00</h1>
+            <h1>{this.state.timer}</h1>
           </div>
         </div>
       </div>

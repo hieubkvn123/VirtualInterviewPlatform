@@ -6,6 +6,7 @@ from config import db_config
 from config import system_mail_config
 from config import ssl_config
 
+import json
 import random
 import hashlib
 import requests
@@ -127,9 +128,21 @@ def login():
 
 		if(cursor.rowcount > 0): # user exists
 			if(not checkUserAdmin(email)):
-				return 'success'
+				user = results[0]
+				response = json.dumps({
+					'status' : 'success',
+					'user.name' : user[1],
+					'user.email' : user[2]
+				})
+				return response
 			else:
+				response = json.dumps({
+					'status' : 'admin'
+				})
 				return 'admin'
 		else:
-			return 'fail'
+			response = json.dumps({
+				'status' : 'fail'
+			})
+			return response
 		
