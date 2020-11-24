@@ -6,26 +6,37 @@ import Webcam from 'react-webcam'
 // Import stylesheets ...
 import './css/vip.css'
 
-function ModalDialog() {
-  const [show, setShow] = React.useState(true);
+class ModalDialog extends Component {
+  constructor(props){
+    super(props)
+    this.state = {}
+  }
 
-  const handleClose = () => setShow(false);
+  componentWillUnmount() {
+    
+  }
 
-  return (
-    <>
-      <Modal show={show} onHide={handleClose} dialogClassName='terms-and-conditions-dialog'>
-        <Modal.Header closeButton>
-          <Modal.Title><h1>Terms and Conditions</h1></Modal.Title>
-        </Modal.Header>
-          <Modal.Body style={{'max-height': 'calc(100vh - 300px)', 'overflow-y': 'auto'}}>{terms_and_conditions}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
+  render(){
+    const [show, setShow] = React.useState(true);
+
+    const handleClose = () => setShow(false);
+
+    return (
+      <>
+        <Modal show={show} onHide={handleClose} dialogClassName='terms-and-conditions-dialog'>
+          <Modal.Header closeButton>
+            <Modal.Title><h1>Terms and Conditions</h1></Modal.Title>
+          </Modal.Header>
+            <Modal.Body style={{'max-height': 'calc(100vh - 300px)', 'overflow-y': 'auto'}}>{terms_and_conditions}</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
 }
 
 class WebcamStreamCapture extends Component {

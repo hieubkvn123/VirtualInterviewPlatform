@@ -1,0 +1,47 @@
+{"type":"General","duration":"1"}
+1. Tell me about yourself.
+2. Walk me through your resume.
+3. What are you short and long-term career goals?
+4. Would you return for your MBA and why?
+5. Describe your three greatest strengths.
+6. What is your greatest weakness?
+7. Do you work better by yourself or as a member of a team?
+8. What would your previous supervisor say about you . . . both positive and negative?
+9. What’s the difference between a manager and a leader?
+10. What have you done to develop your leadership skills?
+11. What decision are the easiest for you to make and which are hardest?
+12. Why should I hire you?
+13. Describe the project that best exemplifies your analytical skills.
+14. How do you resolve conflict?
+15. What values drive you in your professional career?
+16. What are the 3 most important things to you in a new position?
+17. What is your salary history?
+18. What would be an adequate reward for your efforts?
+19. What difficulties do you experience in getting along with others?
+20. What is least interesting about this position?
+21. Do you take calculated risks?
+22. Why should I consider a candidate from outside the company?
+23. What is the most important lesson you have learned in your life?
+24. What else should I know about you?
+25. Who has had the greatest influence on your career?
+26. How would your friends describe you?
+27. Why have you had so many jobs?
+28. Have you ever had to lie in the workplace?
+29. What has been your experience with terminating or removing subordinates?
+30. How would your boss describe your standards of performance?
+31. For how long a period of time would you commit to the company?
+32. What have you learned from the jobs you’ve held?
+33. Are you willing to go wherever a company might send you?
+34. Are you presently geographically mobile? In the future?
+35. What makes you tick?
+36. Why do you want to work here?
+37. How do you feel you could contribute to the company?
+38. What do you want out of life?
+39. How do you measure success?
+40. What personal characteristics are necessary for success?
+41. Do you think your experience to date qualifies you for this position?
+42. What has been your greatest life achievement?
+43. What could management have done in the past to help you function more effectively?
+44. How do you feel about evening or weekend work?
+45. How do you organize and plan for major projects?
+46. What would you like to be doing five years from now?

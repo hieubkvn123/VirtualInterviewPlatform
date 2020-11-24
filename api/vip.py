@@ -13,8 +13,8 @@ CORS(vip)
 
 ### Some config variables ###
 QUESTION_RATIO = {
-    'General' : 3,
-    'Situational' : 4,
+    'General' : 2,
+    'Situational' : 3,
     'Technical' : 2
 }
 
