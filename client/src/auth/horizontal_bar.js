@@ -17,6 +17,11 @@ class HorizontalBar extends Component {
     }
 
     render() {
+        var message = <h3></h3>
+        if(localStorage.getItem('user.name') != undefined){
+            message = <h3>{localStorage.getItem('user.name')}</h3>
+        }
+
         return (
             <div class='nav-bar' id='horizontal-nav'>
                 <Navbar bg="dark" variant="dark">
@@ -26,10 +31,7 @@ class HorizontalBar extends Component {
                     <Nav.Link href="#features">Features</Nav.Link>
                     <Nav.Link href="#pricing">Pricing</Nav.Link>
                     </Nav>
-                    <Form inline>
-                    <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                    <Button variant="outline-info">Search</Button>
-                    </Form>
+                    {message}
                 </Navbar>
             </div>
         );

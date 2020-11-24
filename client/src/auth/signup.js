@@ -14,7 +14,7 @@ class SignUpForm extends Component {
 		this.onSignUp = this.onSignUp.bind(this)
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		/***
 		axios({
 			url : 'http://localhost:8080/',
@@ -28,6 +28,9 @@ class SignUpForm extends Component {
 			})
 
 		***/
+		/* Remove all log in info */
+		localStorage.removeItem('user.email')
+		localStorage.removeItem('user.name')
 	}
 
 	componentWillUnmount() {

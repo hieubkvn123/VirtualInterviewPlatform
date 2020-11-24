@@ -23,3 +23,25 @@
     display : block;
     max-width: 60%;
 }
+
+#information-region {
+    position : absolute;
+    bottom : 0;
+    right : 0;
+    height : 30vh;
+    width : 30vw;
+    padding : 12px;
+    background-color : #213F4d;
+    margin-bottom : 8px;
+    margin-right : 8px;
+    border-radius : 20px;
+}
+
+#information-region td {
+    padding : 20px;
+}
+
+#timer {
+    margin-top : 10px;
+    text-align: center;
+}

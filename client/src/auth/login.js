@@ -53,10 +53,16 @@ class LoginForm extends Component {
 			}
 		}).then(response => response.data)
 		.then(response => {
-			if(response == 'success') {
+			var status = response['status']
+			localStorage.setItem('user.name', response['user.name'])
+			localStorage.setItem('user.email', response['user.email'])
+			console.log(response)
+			console.log(status)
+
+			if(status == 'success') {
 				alert('Logged in successfully')
 				window.location.replace('/vip')
-			}else if(response == 'fail'){
+			}else if(status == 'fail'){
 				alert('Email or password is incorrect')
 			}
 		})
