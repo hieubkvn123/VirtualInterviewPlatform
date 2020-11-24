@@ -13,17 +13,8 @@ CREATE TABLE USERS (
 	password VARCHAR(100) NOT NULL, /* A hashed string */
 	isAdmin BOOLEAN NOT NULL,
 
-	PRIMARY KEY (userID)
-);
-
-CREATE TABLE QUESTIONS (
-	questionID INT(10) NOT NULL,
-	questionGroup VARCHAR(30) NOT NULL,
-	questionContent VARCHAR(1000) NOT NULL,
-	duration INT(10) NOT NULL, /* Duration of question in minutes */
-	forRole VARCHAR(20), /* Applied for technical questions */
-
-	PRIMARY KEY (questionID, questionGroup)
+	PRIMARY KEY (userID),
+	CONSTRAINT userMailConstraint UNIQUE(userMail)
 );
 
 CREATE TABLE ROLES (
@@ -31,4 +22,25 @@ CREATE TABLE ROLES (
 	roleName VARCHAR(100) NOT NULL,
 
 	PRIMARY KEY (roleId)
+);
+
+CREATE TABLE QUESTIONS (
+	questionID INT(10) NOT NULL,
+	questionGroup VARCHAR(30) NOT NULL,
+	questionContent VARCHAR(1000) NOT NULL,
+	duration INT(10) NOT NULL, /* Duration of question in minutes */
+	forRole INT(10), /* Applied for technical questions */
+
+	PRIMARY KEY (questionID, questionGroup),
+	FOREIGN KEY (forRole) REFERENCES ROLES (roleId)
+);
+
+CREATE TABLE INTERVIEW (
+	userMail VARCHAR(100) NOT NULL,
+	userRole VARCHAR(100) NOT NULL,
+	questionID INT(10) NOT NULL,
+	questionGroup VARCHAR(30) NOT NULL,
+	recordingPath VARCHAR(100) NOT NULL,
+
+	FOREIGN KEY (questionID, questionGroup) REFERENCES QUESTIONS(questionID, questionGroup)
 );
