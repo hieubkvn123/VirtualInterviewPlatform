@@ -9,6 +9,7 @@ from flask_mail import Mail, Message
 ### Import all blueprints ###
 from mail_server import app as mail_app
 from auth import auth 
+from vip import vip
 from config import system_mail_config as mail_conf
 from config import ssl_config
 
@@ -23,6 +24,8 @@ app.config['MAIL_USE_SSL'] = True
 mail.init_app(app)
 
 app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(vip, url_prefix='/vip')
+
 CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])

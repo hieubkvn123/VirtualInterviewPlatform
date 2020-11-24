@@ -14,3 +14,7 @@
     padding : 0;
 }
 
+.terms-and-conditions-dialog {
+    display: block;
+    max-width : 75%;
+}

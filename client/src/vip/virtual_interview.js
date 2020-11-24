@@ -1,8 +1,32 @@
 import React, {Component} from 'react'
+import {Modal, Button} from 'react-bootstrap'
+import terms_and_conditions from './term'
 import Webcam from 'react-webcam'
 
 // Import stylesheets ...
 import './css/vip.css'
+
+function ModalDialog() {
+  const [show, setShow] = React.useState(true);
+
+  const handleClose = () => setShow(false);
+
+  return (
+    <>
+      <Modal show={show} onHide={handleClose} dialogClassName='terms-and-conditions-dialog'>
+        <Modal.Header closeButton>
+          <Modal.Title><h1>Terms and Conditions</h1></Modal.Title>
+        </Modal.Header>
+          <Modal.Body style={{'max-height': 'calc(100vh - 300px)', 'overflow-y': 'auto'}}>{terms_and_conditions}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+}
 
 class WebcamStreamCapture extends Component {
   constructor(props){
@@ -36,6 +60,7 @@ class WebcamStreamCapture extends Component {
   render() {
     return (
       <div id='camera-container'>
+        <ModalDialog/>
         <video id='user-camera' autoPlay={true} src={this.videoSrc}></video>
         <p id='info'></p>
       </div>
