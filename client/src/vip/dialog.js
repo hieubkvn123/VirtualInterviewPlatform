@@ -30,6 +30,10 @@ class ModalDialog extends Component {
   }
 
   componentDidMount = async function() {
+    // set the default role as HR
+    localStorage.setItem('selected_role_id', 1)
+    localStorage.setItem('selected_role_text', 'Human Resource')
+
     if(localStorage.getItem('user.name') == undefined){
       alert('Please login first before accessing this site')
       window.location.replace('/signup')
