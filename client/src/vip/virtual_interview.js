@@ -130,7 +130,7 @@ class WebcamStreamCapture extends Component {
   // start the recordrtc recorder
   startRecording = async function(index) {
     // get the recorder with the current media stream
-    var recorder = new RecordRTC(this.mediaStream, {type:'video'})
+    var recorder = new RecordRTC(this.mediaStream, {type:'video', mimeType:'video/mov'})
     var host = this.state.host 
 
     // Start recording 
@@ -168,7 +168,7 @@ class WebcamStreamCapture extends Component {
       // Now that we got the video blob, upload it to server
       var formData = new FormData()
       formData.append('video-blob', blob)
-      formData.append('video-filename', `${question_num}.webm`)
+      formData.append('video-filename', `${question_num}.mov`)
       formData.append('user.email', current_user)
       formData.append('upload-folder', today)
       formData.append('question', question)
