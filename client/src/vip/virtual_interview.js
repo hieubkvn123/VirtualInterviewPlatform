@@ -31,6 +31,7 @@ class WebcamStreamCapture extends Component {
 
     this.componentWillMount = this.componentWillMount.bind(this)
     this.onSetRole = this.onSetRole.bind(this)
+    this.nextQuestion = this.nextQuestion.bind(this)
     this.startInterview = this.startInterview.bind(this)
     this.startRecording = this.startRecording.bind(this)
 
@@ -112,6 +113,8 @@ class WebcamStreamCapture extends Component {
     }, 5000)
 
     // Break time for interviewee to prepare
+    // While breaking, disable next question button
+    this.setState({'next_question_enabled' : false})
     var times_in_seconds = 10
     var timeInterval = setInterval(()=>{
       if(times_in_seconds <= 0){
@@ -130,19 +133,20 @@ class WebcamStreamCapture extends Component {
   // start the recordrtc recorder
   startRecording = async function(index) {
     // get the recorder with the current media stream
-    var recorder = new RecordRTC(this.mediaStream, {type:'video', mimeType:'video/mov'})
-    var host = this.state.host 
+    this.recorder = new RecordRTC(this.mediaStream, {type:'video', mimeType:'video/webm'})
 
     // Start recording 
-    recorder.startRecording()
-    const sleep = m => new Promise(r => setTimeout(r, m))
+    this.recorder.startRecording()
+
+    // enable next question button
+    this.setState({'next_question_enabled' : true})
 
     // Break time for interviewee to prepare
     var times_in_seconds = this.state.questions[index].duration * 60
-    var interviewInterval = setInterval(()=>{
+    this.interviewInterval = setInterval(()=>{
       if(times_in_seconds <= 0){
         // Break over -> start question
-        clearInterval(interviewInterval)
+        clearInterval(this.interviewInterval)
       }
       var seconds = this.padDigits(times_in_seconds % 60,2)
       var minutes = this.padDigits((times_in_seconds - seconds) / 60,2)
@@ -150,9 +154,20 @@ class WebcamStreamCapture extends Component {
       times_in_seconds -= 1
     }, 1000)
 
-    await sleep(times_in_seconds * 1000)
-    // await sleep(3000)
-    
+    this.recorder.setRecordingDuration(times_in_seconds * 1000)
+    this.recorderTimeout = setTimeout(()=>{
+      this.stopRecording()
+      // if the current question is not last, continue
+      if(index + 1 < this.state.questions.length){
+        this.startInterview(index + 1)
+      }else{
+        alert('This is the end of the interview.')
+      }
+    }, times_in_seconds*1000)
+  }
+
+  stopRecording = function() {
+    var host = this.state.host 
     var current_user = localStorage.getItem('user.email')
     var today = this.getCurrentDate()
     var question_num = this.state.current_question_no
@@ -160,9 +175,10 @@ class WebcamStreamCapture extends Component {
     var question_id = this.state.current_question_id
     var question_group = this.state.current_question_group 
 
-    // After the desinated duration, stop recording
-    recorder.stopRecording(async function(){
-      let blob = recorder.getBlob()
+    // After the desinated duration, stop recording\
+    var recorder_ = this.recorder
+    this.recorder.stopRecording(async function(){
+      let blob = recorder_.getBlob()
       console.log(blob)
 
       // Now that we got the video blob, upload it to server
@@ -188,6 +204,17 @@ class WebcamStreamCapture extends Component {
         console.log(response)
       })
     })
+  }
+
+  nextQuestion() {
+    var index = this.state.current_question_no - 1
+
+    // clear the recording process of the current question
+    clearTimeout(this.recorderTimeout)
+
+    // clear the timer interval of the current question
+    clearInterval(this.interviewInterval)
+    this.stopRecording()
     // if the current question is not last, continue
     if(index + 1 < this.state.questions.length){
       this.startInterview(index + 1)
@@ -233,7 +260,7 @@ class WebcamStreamCapture extends Component {
                   <h1>{this.state.timer}</h1>
                 </div>
                 <table id='button-panel'><tr>
-                  <td><button className='btn btn-primary'>Next Question</button></td>
+                  <td><button disabled={!this.state.next_question_enabled} onClick={this.nextQuestion} className='btn btn-primary'>Next Question</button></td>
                   <td><button className='btn btn-primary'>Stop Interview</button></td>
                 </tr></table>
               </div>
@@ -245,5 +272,4 @@ class WebcamStreamCapture extends Component {
   }
 }
 export default   WebcamStreamCapture;
-  // https://www.npmjs.com/package/react-webcam
   
