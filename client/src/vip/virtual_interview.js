@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import {Modal, Button} from 'react-bootstrap'
 import {ModalDialog, QuestionDialog} from './dialog'
 import terms_and_conditions from './term'
-import RecordRTCPromisesHandler from 'recordrtc'
+import RecordRTC from 'recordrtc'
 import config from './config'
 
 /* Import bootstrap */
@@ -17,24 +17,36 @@ class WebcamStreamCapture extends Component {
   constructor(props){
     super(props)
 
-    this.state = {'host':config['host'], 'timer':'00:00', 'streamRecorder':null,'webcamStream':null}
-    this.componentDidMount = this.componentDidMount.bind(this)
+    this.state = {
+      'host':config['host'], 
+      'timer':'00:00', 
+      'streamRecorder':null,
+      'webcamStream':null,
+      'question_show' : false,
+      'current_question_no' : 0,
+      'current_question' : ''
+    }
+
+    this.componentWillMount = this.componentWillMount.bind(this)
     this.onSetRole = this.onSetRole.bind(this)
     this.startInterview = this.startInterview.bind(this)
+    this.startRecording = this.startRecording.bind(this)
+
   }
 
   componentWillUnmount() {
     
   }
 
-  componentDidMount = async function(){
+  componentWillMount = async function(){
     var constraints = { audio: false, video: { width: 1280, height: 720 } };
-    navigator.mediaDevices
+    var stream
+    await navigator.mediaDevices
       .getUserMedia(constraints)
       .then(function(mediaStream) {
         var video = document.querySelector("#user-camera");
-        this.setState({'webcamStream' : mediaStream})
-        this.setState({'streamRecorder' : new RecordRTCPromisesHandler(mediaStream, {type:'video'})})
+        stream = mediaStream
+        // recorder = new RecordRTC(mediaStream, {type:'video'})
 
         video.srcObject = mediaStream;
         video.onloadedmetadata = function(e) {
@@ -44,6 +56,8 @@ class WebcamStreamCapture extends Component {
       .catch(function(err) {
         console.log(err.name + ": " + err.message);
       }); // always check for errors at the end.
+
+    this.mediaStream = stream 
 
       // get the questions list from server
       await axios({
@@ -64,14 +78,27 @@ class WebcamStreamCapture extends Component {
     return Array(Math.max(digits - String(number).length + 1, 0)).join(0) + number;
   }
 
+  // startInterview function takes in an index which indicate the index of the question
+  // this index will also be passed to startRecording.
+  // Once the recording is completed, based on this index the system can track how far
+  // the interviewee is done with the interview. From there decided whether to proceed or not
   startInterview = function (index) {
-    ReactDOM.render(<QuestionDialog text={this.state.questions[index].question} question_no={index+1}/>, document.getElementById('question-dialog-region'))
-    
+    // Flash the question on the screen
+    this.setState({'current_question_no' : index + 1})
+    this.setState({'current_question' : this.state.questions[index].question})
+    this.setState({'question_show' : true})
+    // After 5 seconds hide the question
+    setTimeout(() => {
+      this.setState({'question_show' : false})
+    }, 5000)
+
+    // Break time for interviewee to prepare
     var times_in_seconds = 10
     var timeInterval = setInterval(()=>{
       if(times_in_seconds <= 0){
+        // Break over -> start question
         clearInterval(timeInterval)
-        this.startRecording()
+        this.startRecording(index)
       }
       var seconds = this.padDigits(times_in_seconds % 60,2)
       var minutes = this.padDigits((times_in_seconds - seconds) / 60,2)
@@ -82,29 +109,45 @@ class WebcamStreamCapture extends Component {
 
   // triggered when the preparation time is over
   // start the recordrtc recorder
-  startRecording = async function() {
-    this.state.streamRecorder.startRecording()
+  startRecording = async function(index) {
+    // get the recorder with the current media stream
+    var recorder = new RecordRTC(this.mediaStream, {type:'video'})
+    var host = this.state.host 
+
+    // Start recording 
+    recorder.startRecording()
     const sleep = m => new Promise(r => setTimeout(r, m))
     await sleep(3000)
  
-    await this.state.streamRecorder.stopRecording()
-    let blob = await this.state.streamRecorder.recorder.getBlob()
-    
-    // Now that we got the video blob, upload it to server
-    var formData = new FormData()
-    formData.append('video', blob)
+    // After the desinated duration, stop recording
+    recorder.stopRecording(async function(){
+      let blob = recorder.getBlob()
+      console.log(blob)
 
-    axios({
-      url : `https://${this.state.host}:8080/vip/upload`,
-      method : 'POST',
-      data : formData,
-      headers : {
-        'Content-Type' : 'multipart/form-data'
-      }
-    }).then(response => response.data)
-    .then(response => {
-      alert(response)
+      // Now that we got the video blob, upload it to server
+      var formData = new FormData()
+      formData.append('video-blob', blob)
+      formData.append('video-filename', 'test.webm')
+
+      // Upload the video on the server
+      await axios({
+        url : `https://${host}:8080/vip/upload`,
+        method : 'POST',
+        data : formData,
+        headers : {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }).then(response => response.data)
+      .then(response => {
+        console.log(response)
+      })
     })
+    // if the current question is not last, continue
+    if(index + 1 < this.state.questions.length){
+      this.startInterview(index + 1)
+    }else{
+      alert('This is the end of the interview.')
+    }
   }
 
   onSetRole(){
@@ -116,7 +159,14 @@ class WebcamStreamCapture extends Component {
     return (
       <div id='camera-container'>
         <ModalDialog onSetRole={this.onSetRole}/>
-        <div id='question-dialog-region'></div>
+        <div id='question-dialog-region'>
+          <Modal show={this.state.question_show}>
+            <Modal.Header>
+                <Modal.Title>Question Number {this.state.current_question_no}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{this.state.current_question}</Modal.Body>
+          </Modal>
+        </div>
         <video id='user-camera' autoPlay={true} src={this.videoSrc}></video>
         <p id='info'></p>
         <div id='information-region' style={{

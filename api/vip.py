@@ -3,7 +3,9 @@ from flask import request
 from flask import current_app
 from flask_cors import CORS 
 from config import db_config
+from werkzeug.utils import secure_filename
 
+import os
 import json
 import random
 import mysql.connector 
@@ -17,6 +19,7 @@ QUESTION_RATIO = {
     'Behavioural' : 3,
     'Technical' : 2
 }
+UPLOAD_FOLDER = './uploads'
 
 ### Setting up database connection ###
 def create_connection():
@@ -76,6 +79,9 @@ def get_questions():
 
 @vip.route('/upload', methods=['POST'])
 def upload():
-    print(request.files['file'])
-
-    return 'success'
+    if(request.method == 'POST'):
+        print('Inside upload')
+        file_ = request.files['video-blob']
+        file_name = request.form['video-filename']
+        file_.save(os.path.join(current_app.config['UPLOAD_FOLDER'], file_name))
+        return 'success'

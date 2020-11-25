@@ -10,6 +10,7 @@ from flask_mail import Mail, Message
 from mail_server import app as mail_app
 from auth import auth 
 from vip import vip
+from vip import UPLOAD_FOLDER
 from config import system_mail_config as mail_conf
 from config import ssl_config
 
@@ -25,7 +26,7 @@ mail.init_app(app)
 
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(vip, url_prefix='/vip')
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])

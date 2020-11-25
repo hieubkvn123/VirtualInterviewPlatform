@@ -106,7 +106,7 @@ class ModalDialog extends Component {
 class QuestionDialog extends Component {
   constructor(props){
     super(props)
-    this.state = {'show' : true, 'hidden':false}
+    this.state = {'show' : true}
   }
 
   componentDidMount() {
