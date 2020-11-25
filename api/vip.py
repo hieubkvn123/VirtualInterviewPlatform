@@ -57,7 +57,12 @@ def get_random_questions(question_group, num_questions=2):
 
     questions = []
     for row in results:
-        selected_cols = {'question':row[2], 'duration':row[3]}
+        selected_cols = {
+            'id' : row[0],
+            'group' : row[1],
+            'question':row[2], 
+            'duration':row[3]
+        }
         questions.append(selected_cols)
 
     if(num_questions > len(questions)):
@@ -80,8 +85,32 @@ def get_questions():
 @vip.route('/upload', methods=['POST'])
 def upload():
     if(request.method == 'POST'):
-        print('Inside upload')
         file_ = request.files['video-blob']
         file_name = request.form['video-filename']
-        file_.save(os.path.join(current_app.config['UPLOAD_FOLDER'], file_name))
+        file_prefix = file_name.split('.')[0]
+        question_id = request.form['question_id']
+        question_group = request.form['question_group']
+        question = request.form['question']
+
+        user_mail = request.form['user.email']
+        user_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], user_mail)
+        if(not os.path.exists(user_folder)):
+            print('[*] No user folder, creating ... ')
+            os.mkdir(user_folder)
+
+        upload_folder = request.form['upload-folder']
+        full_upload_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], user_mail, upload_folder)
+
+        if(not os.path.exists(full_upload_folder)):
+            print('[*] No upload folder, creating ...')
+            os.mkdir(full_upload_folder)
+
+        ### Save question info ###
+        json.dump({
+            'question_id' : question_id,
+            'question_group' : question_group,
+            'question' : question
+        }, open(os.path.join(full_upload_folder, file_prefix + '.json'), 'w'))
+
+        file_.save(os.path.join(full_upload_folder, file_name))
         return 'success'

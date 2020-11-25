@@ -1,16 +1,17 @@
 #camera-container {
-    margin : auto;
-    height : 90vh;
-    width : 80%;
+    display: inline-block;
+    width : 100%;
     overflow: hidden;
+    background : #fff;
+    margin-top : 2%;
 }
 
 #user-camera {
     overflow: scroll;
-    margin : auto;
-    height : auto;
     width : 100%;
+    height : 100%;
     margin-top : 50px;
+    margin-bottom : 50px;
     padding : 0;
 }
 
@@ -25,23 +26,50 @@
 }
 
 #information-region {
-    position : absolute;
-    bottom : 0;
-    right : 0;
-    height : 30vh;
-    width : 30vw;
+    /*position : absolute;*/
+    display: inline-block;
+    height : 100%;
+    width : 100%;
     padding : 12px;
-    background-color : #213F4d;
-    margin-bottom : 8px;
-    margin-right : 8px;
     border-radius : 20px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 
 #information-region td {
-    padding : 20px;
+    padding : 8px;
+    font-size : 20px;
 }
 
 #timer {
-    margin-top : 10px;
+    font-size : 40px;
+    margin-top : 20px;
     text-align: center;
+}
+
+#information-table {
+    overflow : scroll
+}
+
+#container-table tr {
+    width : 100%;
+}
+
+#vid-cell {
+    width : 70%;
+    padding : 8px;
+}
+
+#info-cell {
+    width : 30%;
+    font-size : 20px;
+    padding : 8px
+}
+
+#button-panel {
+    width : 100%;
+}
+
+#button-panel button {
+    width : 100%;
 }
