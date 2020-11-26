@@ -73,23 +73,6 @@ def get_random_questions(question_group, num_questions=2):
 
     return randomly_pick(questions, num_questions)
 
-def put_text_on_video(video_file, text):
-    ### define the video ###
-    my_video = mp.VideoFileClip(video_file, audio=True)
-    w,h = moviesize = my_video.size
-
-    ### Create the text ###
-    my_text = mp.TextClip(text, font=’Amiri-regular’, color=’white’, fontsize=34)
-    txt_col = my_text.on_color(size=(my_video.w + my_text.w, my_text.h+5), color=(0,0,0), pos=(6,’center’), col_opacity=0.6)
-    txt_mov = txt_col.set_pos( lambda t: (max(w/30,int(w-0.5*w*t)),max(5*h/6,int(100*t))) )
-
-    ### Rendering ###
-    final = mp.CompositeVideoClip([my_video,txt_mov])
-
-    file_prefix = os.path.basename(video_file)
-    result_file = os.path.join(file_prefix, 'result.webm')
-    final.write_videofile(,fps=24,codec='libx264')
-
 @vip.route('/get_questions', methods=['POST']) 
 def get_questions():
     general_questions = get_random_questions('General', num_questions=QUESTION_RATIO['General']) 
