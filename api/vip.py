@@ -119,3 +119,23 @@ def upload():
 
         file_.save(video_file)
         return 'success'
+
+@vip.route('/save_interview', methods=['POST'])
+def save_interview():
+    if(request.method == 'POST'):
+        connection = create_connection()
+        userMail = request.form['userMail']
+        roleId = request.form['roleId']
+        upload_path = request.form['upload_path']
+
+        sql = 'INSERT INTO INTERVIEW VALUES (%s, %s, %s)'
+        val = (userMail, roleId, upload_path)
+        cursor = connection.cursor()
+        cursor.execute(sql, val)
+        connection.commit()
+        connection.close()
+
+        if(cursor.rowcount > 0):
+            return 'success'
+        else:
+            return 'fail'

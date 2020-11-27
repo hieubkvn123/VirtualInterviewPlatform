@@ -38,10 +38,7 @@ CREATE TABLE QUESTIONS (
 CREATE TABLE INTERVIEW (
 	userMail VARCHAR(100) NOT NULL,
 	roleId INT(10) NOT NULL,
-	questionID INT(10) NOT NULL,
-	questionGroup VARCHAR(30) NOT NULL,
 	recordingPath VARCHAR(100) NOT NULL,
 
-	FOREIGN KEY (questionID, questionGroup) REFERENCES QUESTIONS(questionID, questionGroup),
 	FOREIGN KEY (roleId) REFERENCES ROLES(roleId)
 );

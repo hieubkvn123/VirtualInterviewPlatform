@@ -23,6 +23,7 @@ class WebcamStreamCapture extends Component {
       'streamRecorder':null,
       'webcamStream':null,
       'question_show' : false,
+      'stop_interview_enabled' : false,
       'current_question_no' : 0,
       'current_question' : '',
       'current_question_id' : '',
@@ -33,6 +34,8 @@ class WebcamStreamCapture extends Component {
     this.onSetRole = this.onSetRole.bind(this)
     this.nextQuestion = this.nextQuestion.bind(this)
     this.startInterview = this.startInterview.bind(this)
+    this.stopInterview = this.stopInterview.bind(this)
+    this.saveRecordingToDb = this.saveRecordingToDb.bind(this)
     this.startRecording = this.startRecording.bind(this)
 
   }
@@ -42,7 +45,7 @@ class WebcamStreamCapture extends Component {
   }
 
   componentWillMount = async function(){
-    var constraints = { audio: false, video: { width: 1280, height: 720 } };
+    var constraints = { audio: true, video: { width: 1280, height: 720 } };
     var stream
     await navigator.mediaDevices
       .getUserMedia(constraints)
@@ -129,6 +132,15 @@ class WebcamStreamCapture extends Component {
     }, 1000)
   }
 
+  stopInterview() {
+    // save interview details to users
+    this.saveRecordingToDb()
+
+    // clear user data 
+    localStorage.removeItem('user.email')
+    window.location.replace('/signup')
+  }
+
   // triggered when the preparation time is over
   // start the recordrtc recorder
   startRecording = async function(index) {
@@ -206,6 +218,31 @@ class WebcamStreamCapture extends Component {
     })
   }
 
+  saveRecordingToDb() {
+    var user_mail = localStorage.getItem('user.email')
+    var roleId = localStorage.getItem('selected_role_id')
+    var today = this.getCurrentDate()
+    var upload_path = `${user_mail}/${today}`
+    var host = this.state.host
+
+    var formData = new FormData()
+    formData.append('userMail', user_mail)
+    formData.append('roleId', roleId)
+    formData.append('upload_path', upload_path)
+    
+    axios({
+      url : `https://${host}:8080/vip/save_interview`,
+      method : 'POST',
+      data : formData,
+      headers : {
+        'Content-Type' : 'multipart/form-data'
+      }
+    }).then(response => response.data)
+    .then(response => {
+      console.log(response)
+    })
+  }
+
   nextQuestion() {
     var index = this.state.current_question_no - 1
 
@@ -219,6 +256,7 @@ class WebcamStreamCapture extends Component {
     if(index + 1 < this.state.questions.length){
       this.startInterview(index + 1)
     }else{
+      this.setState({'stop_interview_enabled':true})
       alert('This is the end of the interview.')
     }
   }
@@ -238,7 +276,7 @@ class WebcamStreamCapture extends Component {
         <table id='container-table'>
           <tr>
             <td id='vid-cell'>
-              <video id='user-camera' autoPlay={true} src={this.videoSrc}></video>
+              <video muted id='user-camera' autoPlay={true} src={this.videoSrc}></video>
             </td>
             <td id='info-cell'>
               <div id='information-region' style={{color : 'black'}}>
@@ -261,7 +299,7 @@ class WebcamStreamCapture extends Component {
                 </div>
                 <table id='button-panel'><tr>
                   <td><button disabled={!this.state.next_question_enabled} onClick={this.nextQuestion} className='btn btn-primary'>Next Question</button></td>
-                  <td><button className='btn btn-primary'>Stop Interview</button></td>
+                  <td><button onClick={this.stopInterview} className='btn btn-primary' disabled={!this.state.stop_interview_enabled}>Stop Interview</button></td>
                 </tr></table>
               </div>
             </td>

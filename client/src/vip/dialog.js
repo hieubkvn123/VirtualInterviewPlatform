@@ -91,7 +91,7 @@ class ModalDialog extends Component {
                 <option value='2'>Sales and Marketing</option>
                 <option value='3'>Operation and Manufacturing</option>
                 <option value='4'>Information Technology</option>
-                <option value='5'>Finace and Accounting</option>
+                <option value='5'>Finance and Accounting</option>
                 <option value='6'>Research and Development/Engineering</option>
                 <option value='7'>Supply chain management and Logistics</option>
               </select>
